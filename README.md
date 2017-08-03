@@ -1,4 +1,4 @@
-# AuthModule
+# Hedwig API
 
 <!-- Start: Badges section -->
 ![MIT License][license-badge]
