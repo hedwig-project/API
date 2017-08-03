@@ -6,6 +6,7 @@
  */
 
 module.exports = function (app) {
+    app.use('/', require('./mainRoutes')());
     app.use('/user', require('./users/usersRoutes')());
     app.use('/home', require('./home/homeRoutes')());
 
