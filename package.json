@@ -1,16 +1,23 @@
 {
-  "name": "auth-module",
-  "version": "1.0.0",
-  "description": "Authorization module",
+  "name": "API",
+  "version": "0.1.0",
+  "description": "Cloud server for Hedwig.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hedwig-project/API"
+  },
+  "bugs": {
+    "url": "https://github.com/hedwig-project/API/issues"
+  },
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon app/index.js"
   },
-  "author": "possani",
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^1.0.2",
     "bcryptjs": "^2.4.3",
+    "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
     "co": "^4.6.0",
     "connect-mongo": "^1.3.2",
@@ -27,6 +34,13 @@
     "morgan": "^1.8.1",
     "passport": "^0.3.2",
     "passport-jwt": "^2.2.1",
-    "winston": "^2.3.1"
+    "redis": "^2.8.0",
+    "socket.io": "^2.0.3",
+    "winston": "^2.3.1",
+    "winston-daily-rotate-file": "^1.7.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1",
+    "socket.io-client": "^2.0.3"
   }
 }
