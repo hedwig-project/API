@@ -1,21 +1,14 @@
-'use strict';
-
-/**
- * Module dependencies
- */
-
+const { wrap: async } = require('co');
+const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
-const jwt = require('jsonwebtoken');
-const { wrap: async } = require('co');
-const config = require('../../config');
+const config = require('../config');
 
 /**
  * Methods definitions
  */
 
 // Rest API Methods
-
 const create = async(function* (req, res) {
     const user = new User(req.body);
     try {
@@ -107,7 +100,6 @@ const getUserWithCriteria = async(function* (criteria, select) {
 /**
  * Exported methods
  */
-
 module.exports = {
     // Rest API Methods
     profile: profile,
