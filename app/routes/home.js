@@ -1,7 +1,7 @@
 const passport = require('passport');
 const router = require('express').Router();
-const auth = require('../../controllers/auth');
-const home = require('../../controllers/home');
+const auth = require('../controllers/auth');
+const home = require('../controllers/home');
 
 module.exports = () => {
   router

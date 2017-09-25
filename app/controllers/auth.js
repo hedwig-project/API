@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const { wrap: async } = require('co');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const User = mongoose.model('User');
+const User = require('../models/user');
 const config = require('../config');
 
 /**

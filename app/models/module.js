@@ -8,4 +8,4 @@ const ModuleSchema = new Schema({
   serial: { type: String },
 });
 
-mongoose.model('Module', ModuleSchema);
+module.exports = mongoose.model('Module', ModuleSchema);

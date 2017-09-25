@@ -8,4 +8,4 @@ const HomeSchema = new Schema({
   modules: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Module' }],
 });
 
-mongoose.model('Home', HomeSchema);
+module.exports = mongoose.model('Home', HomeSchema);

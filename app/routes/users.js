@@ -1,7 +1,7 @@
 const passport = require('passport');
 const router = require('express').Router();
-const auth = require('../../controllers/auth');
-const users = require('../../controllers/users');
+const auth = require('../controllers/auth');
+const users = require('../controllers/users');
 
 module.exports = () => {
   router

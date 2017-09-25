@@ -1,6 +1,6 @@
 const homeRouter = require('./home');
 const logger = require('../logger');
-const usersRouter = require('./user');
+const usersRouter = require('./users');
 
 module.exports = (app) => {
   app.get('/health', (req, res) => {
@@ -10,7 +10,7 @@ module.exports = (app) => {
   app.get('/info', (req, res) => {  // Workaround to make Morpheus integration work
     res.send('OK');
   });
-  
+
   app.use('/home', homeRouter());
   app.use('/user', usersRouter());
 
@@ -22,7 +22,7 @@ module.exports = (app) => {
       return next();
     }
 
-    loggerr.error(err.stack);
+    logger.error(err.stack);
 
     if (err.stack.includes('ValidationError')) {
       res.status(422);

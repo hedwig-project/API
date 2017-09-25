@@ -1,9 +1,9 @@
 const { wrap: async } = require('co');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const Home = mongoose.model('Home');
-const Module = mongoose.model('Module');
-const User = mongoose.model('User');
+const Home = require('../models/home');
+const Module = require('../models/module');
+const User = require('../models/user');
 const Users = require('../controllers/users');
 const config = require('../config');
 
