@@ -9,7 +9,7 @@
   "bugs": {
     "url": "https://github.com/hedwig-project/API/issues"
   },
-  "main": "server.js",
+  "main": "app/index.js",
   "scripts": {
     "start": "nodemon app/index.js"
   },
