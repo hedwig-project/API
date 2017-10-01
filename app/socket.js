@@ -171,8 +171,12 @@ module.exports = (app) => {
   process.on('SIGINT', () => {
     io.close(() => {
       logger.info(`[Socket.io] Closed server`);
-      redisClient     // TODO: Delete all connections information and gracefully exit
-        .quitAsync()
+      redisClient
+        .flushallAsync()
+        .then(() => {
+          logger.info(`[Redis] Flushed all connection information`)
+          return redisClient.quitAsync();
+        })
         .then(() => process.exit());
     });
   });
