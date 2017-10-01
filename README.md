@@ -1,4 +1,4 @@
-# Hedwig API
+# API
 
 <!-- Start: Badges section -->
 ![MIT License][license-badge]
@@ -8,7 +8,8 @@ Module responsible for authentication, registration and authorization in Hedwig 
 
 ## Requirements
   - [Node][node]
-  - [Npm][npm]
+  - [npm][npm]
+  - [Redis][redis] (or just use the `docker-compose` configuration available)
 
 ## What's inside
   - [Express][express]
@@ -17,7 +18,6 @@ Module responsible for authentication, registration and authorization in Hedwig 
   - [ESLint][eslint]
   - [JWT][jwt]
   - [Nodemon][nodemon]
-
 
 ## Setup
 
@@ -31,3 +31,9 @@ Use `npm start` to run the development server, or you can use nodemon instead, t
 
 MIT
 
+<!-- Start: URL section -->
+[node]: https://nodejs.org
+[npm]: https://www.npmjs.com/
+[redis]: http://redis.io/
+[license-badge]: https://img.shields.io/github/license/hedwig-project/API.svg
+<!-- End: URL section -->
