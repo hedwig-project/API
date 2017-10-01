@@ -56,7 +56,7 @@ module.exports = (app) => {
           }
         });
 
-      logger.info(`[action] ${data}`);
+      logger.info(`[action] ${JSON.stringify(data)}`);
 
       if (cb !== undefined) {
         cb('Ok');
@@ -169,8 +169,12 @@ module.exports = (app) => {
 
   // Graceful shutdown
   process.on('SIGINT', () => {
-    redisClient.quit(); // TODO: Delete all connections information and gracefully exit
-    io.close(() => logger.info(`[Socket.io] Closed server`));
+    io.close(() => {
+      logger.info(`[Socket.io] Closed server`);
+      redisClient     // TODO: Delete all connections information and gracefully exit
+        .quitAsync()
+        .then(() => process.exit());
+    });
   });
 
   return server;
