@@ -2,7 +2,7 @@ const bluebird = require('bluebird');
 const http = require('http');
 const redis = require('redis');
 const socketio = require('socket.io');
-const db = require('./db/morpheus');
+const db = require('./models/morpheus');
 const logger = require('./logger');
 
 module.exports = (app) => {
@@ -27,13 +27,15 @@ module.exports = (app) => {
   io.on('connection', socket => {
     logger.info(`[Socket.io] New connection`);
 
-    socket.on('hello', (morpheusId, cb) => {
+    socket.on('hello', (data, cb) => {
+      const id = JSON.parse(data);
+
       redisClient
         .multi()
-        .set(morpheusId, socket.id)
-        .set(socket.id, morpheusId)
+        .hmset(id.morpheusId, id.type, socket.id)
+        .hmset(socket.id, "morpheusId", id.morpheusId, "type", id.type)
         .execAsync()
-        .then(() => logger.info(`[Redis] Saved connection information: ${morpheusId} ${socket.id}`));
+        .then(() => logger.info(`[Redis] Saved ${id.type} connection information: ${id.morpheusId} ${socket.id}`));
 
       if (cb !== undefined) {
         cb('Ok');
@@ -85,10 +87,14 @@ module.exports = (app) => {
     socket.on('disconnect', () => {
       logger.info(`[Socket.io] Closed connection`);
       redisClient
-        .multi()
-        .del(redisClient.get(socket.id))
-        .del(socket.id)
-        .execAsync()
+        .hgetallAsync(socket.id)
+        .then((data) => {
+          return redisClient
+            .multi()
+            .hdel(data.morpheusId, data.type)
+            .del(socket.id)
+            .execAsync();
+        })
         .then(() => logger.info(`[Redis] Cleaned up connection information`));
     });
   });
