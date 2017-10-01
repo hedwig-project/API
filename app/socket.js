@@ -2,7 +2,7 @@ const bluebird = require('bluebird');
 const http = require('http');
 const redis = require('redis');
 const socketio = require('socket.io');
-const db = require('./models/morpheus');
+const db = require('./models/messages');
 const logger = require('./logger');
 
 module.exports = (app) => {
@@ -17,7 +17,7 @@ module.exports = (app) => {
   });
 
   redisClient.on('error', err => {
-    logger.error(`[Redis] Error: ${err.code}`);
+    logger.error(`[Redis] Error: ${err}`);
   });
 
   // Websocket
@@ -30,6 +30,7 @@ module.exports = (app) => {
     socket.on('hello', (data, cb) => {
       const id = JSON.parse(data);
 
+      // TODO: can multiple instances of same type connect to socket.io server?
       redisClient
         .multi()
         .hmset(id.morpheusId, id.type, socket.id)
@@ -40,17 +41,47 @@ module.exports = (app) => {
       if (cb !== undefined) {
         cb('Ok');
       }
-    })
+    });
+
+    socket.on('action', (data, cb) => {
+      redisClient
+        .hgetallAsync(socket.id)
+        .then((id) => {
+          return redisClient.hgetallAsync(id.morpheusId);
+        })
+        .then((id) => {
+          if (id.morpheus) {
+            io.to(id.morpheus).emit('action', JSON.stringify(data));
+            logger.info(`[action] Event emitted successfully to ${id.morpheus}`);
+          }
+        });
+
+      logger.info(`[action] ${data}`);
+
+      if (cb !== undefined) {
+        cb('Ok');
+      }
+    });
 
     socket.on('confirmation', (data, cb) => {
-      // TODO: route confirmation messages to client apps
+      redisClient
+        .hgetallAsync(socket.id)
+        .then((id) => {
+          return redisClient.hgetallAsync(id.morpheusId);
+        })
+        .then((id) => {
+          if (id.dashboard) {
+            io.to(id.dashboard).emit('confirmation', JSON.parse(data));
+            logger.info(`[confirmation] Event emitted successfully to ${id.dashboard}`);
+          }
+        });
 
       logger.info(`[confirmation] ${data}`);
 
       if (cb !== undefined) {
         cb('Ok');
       }
-    })
+    });
 
     socket.on('configuration', (data, cb) => {
       // TODO: get configuration
@@ -60,10 +91,20 @@ module.exports = (app) => {
       if (cb !== undefined) {
         cb('Ok');
       }
-    })
+    });
 
     socket.on('data', (data, cb) => {
-      // TODO: transmit data
+      redisClient
+        .hgetallAsync(socket.id)
+        .then((id) => {
+          return redisClient.hgetallAsync(id.morpheusId);
+        })
+        .then((id) => {
+          if (id.dashboard) {
+            io.to(id.dashboard).emit('data', JSON.parse(data));
+            logger.info(`[data] Event emitted successfully to ${id.dashboard}`);
+          }
+        });
 
       db.saveData(JSON.parse(data));
       logger.info(`[data] ${data}`);
@@ -74,7 +115,17 @@ module.exports = (app) => {
     });
 
     socket.on('confirmationReport', (data, cb) => {
-      // TODO: transmit data
+      redisClient
+        .hgetallAsync(socket.id)
+        .then((id) => {
+          return redisClient.hgetallAsync(id.morpheusId);
+        })
+        .then((id) => {
+          if (id.dashboard) {
+            io.to(id.dashboard).emit('confirmationReport', JSON.parse(data));
+            logger.info(`[confirmationReport] Event emitted successfully to ${id.dashboard}`);
+          }
+        });
 
       db.saveConfirmationReport(JSON.parse(data));
       logger.info(`[confirmationReport] ${data}`);
