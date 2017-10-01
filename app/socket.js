@@ -2,6 +2,7 @@ const bluebird = require('bluebird');
 const http = require('http');
 const redis = require('redis');
 const socketio = require('socket.io');
+const db = require('./db/morpheus');
 const logger = require('./logger');
 
 module.exports = (app) => {
@@ -42,7 +43,7 @@ module.exports = (app) => {
     socket.on('confirmation', (data, cb) => {
       // TODO: route confirmation messages to client apps
 
-      logger.info(`[confirmation] ${JSON.stringify(data)}`);
+      logger.info(`[confirmation] ${data}`);
 
       if (cb !== undefined) {
         cb('Ok');
@@ -52,7 +53,7 @@ module.exports = (app) => {
     socket.on('configuration', (data, cb) => {
       // TODO: get configuration
 
-      logger.info(`[configuration] ${JSON.stringify(data)}`);
+      logger.info(`[configuration] ${data}`);
 
       if (cb !== undefined) {
         cb('Ok');
@@ -60,9 +61,10 @@ module.exports = (app) => {
     })
 
     socket.on('data', (data, cb) => {
-      // TODO: transmit and persist data
+      // TODO: transmit data
 
-      logger.info(`[data] ${JSON.stringify(data)}`);
+      db.saveData(JSON.parse(data));
+      logger.info(`[data] ${data}`);
 
       if (cb !== undefined) {
         cb('Ok');
@@ -70,8 +72,9 @@ module.exports = (app) => {
     });
 
     socket.on('confirmationReport', (data, cb) => {
-      // TODO: transmit and persist data
+      // TODO: transmit data
 
+      db.saveConfirmationReport(JSON.parse(data));
       logger.info(`[confirmationReport] ${data}`);
 
       if (cb !== undefined) {
@@ -90,7 +93,7 @@ module.exports = (app) => {
     });
   });
 
-  // Debugging
+  // Debug endpoints
   app.post('/message', (req, res) => {
     logger.info(`[debug] Broadcasting a mock event of type "${req.body.type}"`);
     io.emit(req.body.type, JSON.stringify(req.body.payload));
@@ -109,7 +112,7 @@ module.exports = (app) => {
 
   // Graceful shutdown
   process.on('SIGINT', () => {
-    redisClient.quit();
+    redisClient.quit(); // TODO: Delete all connections information and gracefully exit
     io.close(() => logger.info(`[Socket.io] Closed server`));
   });
 

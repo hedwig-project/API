@@ -4,7 +4,7 @@ const development = require('./env/development');
 const test = require('./env/test');
 
 const defaults = {
-  root: path.join(__dirname, '../..'),
+  root: path.join(__dirname, '..'),
 };
 
 const environments = {

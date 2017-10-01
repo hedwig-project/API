@@ -12,7 +12,9 @@ const logger = require('./logger');
 const router = require('./routes');
 const socketio = require('./socket');
 
-// Express
+/*
+ * Express
+ */
 const app = express();
 
 app.use(bodyParser.json());
@@ -42,9 +44,11 @@ if (process.env.NODE_ENV === 'development') {
 
 router(app);
 
-// Mongo
+/*
+ * Mongo
+ */
 mongoose.Promise = global.Promise;
-const mongoConnection = mongoose
+const mongooseConnection = mongoose
   .connect(config.db, {
     server: {
       socketOptions: { keepAlive: 1 },
@@ -52,14 +56,18 @@ const mongoConnection = mongoose
   })
   .connection;
 
-mongoConnection
-  .once('open', () => logger.info('[Mongo] Connected on port 27017'))
-  .on('error', () => logger.error('[Mongo] An error occurred'));
+mongooseConnection
+  .once('open', () => logger.info('[MongoDB] Connected on port 27017'))
+  .on('error', () => logger.error('[MongoDB] An error occurred'));
 
-// Socket.io server
+/*
+ * Socket.io server
+ */
 const server = socketio(app);
 
-// Listen
+/*
+ * Listen
+ */
 server.listen((process.env.PORT || 9090), () => {
   logger.info(`[Server] Listening on port ${process.env.PORT || 9090}`);
 });
