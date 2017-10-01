@@ -43,7 +43,7 @@ module.exports = (app) => {
       }
     });
 
-    socket.on('action', (data, cb) => {
+    socket.on('actionRequest', (data, cb) => {
       redisClient
         .hgetallAsync(socket.id)
         .then((id) => {
@@ -51,12 +51,12 @@ module.exports = (app) => {
         })
         .then((id) => {
           if (id.morpheus) {
-            io.to(id.morpheus).emit('action', JSON.stringify(data));
-            logger.info(`[action] Event emitted successfully to ${id.morpheus}`);
+            io.to(id.morpheus).emit('actionRequest', JSON.stringify(data));
+            logger.info(`[actionRequest] Event emitted successfully to ${id.morpheus}`);
           }
         });
 
-      logger.info(`[action] ${JSON.stringify(data)}`);
+      logger.info(`[actionRequest] ${JSON.stringify(data)}`);
 
       if (cb !== undefined) {
         cb('Ok');
