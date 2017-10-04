@@ -1,24 +1,17 @@
-'use strict';
-
-/**
- * Module dependencies
- */
-
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
-const Home = mongoose.model('Home');
-const Module = mongoose.model('Module');
-const jwt = require('jsonwebtoken');
 const { wrap: async } = require('co');
+const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+const Home = require('../models/home');
+const Module = require('../models/module');
+const User = require('../models/user');
 const Users = require('../controllers/users');
-const config = require('../../config');
+const config = require('../config');
 
 /**
  * Methods definitions
  */
 
 // Rest API Methods
-
 const create = async(function* (req, res) {
     let homeParameters = {
         name: req.body.name || '',
@@ -276,7 +269,6 @@ const deleteModule = async(function* (user, homeId, moduleId) {
 /**
  * Exported methods
  */
-
 module.exports = {
     // Rest API Methods
     listHomes: listHomes,
