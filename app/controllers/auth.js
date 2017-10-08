@@ -38,7 +38,7 @@ exports.authenticate = async(function* (req, res) {
       .compare(req.body.password, user[0].hashed_password)
       .then((match) => {
         if (match) {
-          let token = 'JWT ' + jwt.sign(userView, config.apiSecret(), { expiresIn: 3600 });
+          let token = jwt.sign(userView, config.apiSecret(), { expiresIn: 3600 });
           return res.json({ success: true, message: 'USER_LOGGED_IN', token: token, response: { user: userView } });
         } else {
           return res.status(401).json({ success: false, message: 'INVALID_CREDENTIALS' });
