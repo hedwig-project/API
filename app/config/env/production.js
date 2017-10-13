@@ -21,7 +21,7 @@ const API_SECRET_ADM = process.env.API_SECRET_ADM;
 if (!API_SECRET_ADM || API_SECRET_ADM === "") throw new Error('API_SECRET_ADM must be set as environment variable');
 
 module.exports = {
-  db: `mongodb://${DB_HOST}/${DB_NAME}`,
+  db: `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`,
   apiSecret: () => {
     return API_SECRET;
   },

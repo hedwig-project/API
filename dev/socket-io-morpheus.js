@@ -1,4 +1,4 @@
-const socket = require('socket.io-client')('http://ec2-54-232-254-163.sa-east-1.compute.amazonaws.com:9090')
+const socket = require('socket.io-client')('http://138.197.83.143:9090')
 
 socket.on('connect', () => {
   console.log('Connected')

@@ -32,6 +32,10 @@ Use `npm start` to run the development server.
 
 We recommend using a process manager such as [pm2][pm2], for which we have an available `ecosystem.config.js` file to store production configuration.
 
+```
+pm2 start ecosystem.config.js --env production
+```
+
 ## License
 
 MIT

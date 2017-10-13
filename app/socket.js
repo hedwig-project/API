@@ -10,7 +10,14 @@ module.exports = (app) => {
   bluebird.promisifyAll(redis.RedisClient.prototype);
   bluebird.promisifyAll(redis.Multi.prototype);
 
-  const redisClient = redis.createClient();
+  const redisClient = redis.createClient({
+    retry_strategy: (options) => {
+      if (options.attempt > 10) {
+        return undefined; // End reconnecting with built in error
+      }
+      return Math.min(options.attempt * 100, 3000); // Reconnect after
+    }
+  });
 
   redisClient.on('connect', () => {
     logger.info(`[Redis] Connected on port ${process.env.REDIS_PORT || 6379}`);
