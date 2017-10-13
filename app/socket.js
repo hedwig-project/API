@@ -2,7 +2,7 @@ const bluebird = require('bluebird');
 const http = require('http');
 const redis = require('redis');
 const socketio = require('socket.io');
-const db = require('./models/messages');
+const db = require('./models/message');
 const logger = require('./logger');
 
 module.exports = (app) => {

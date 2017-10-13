@@ -24,5 +24,13 @@ module.exports = () => {
     .route('/delete')
     .delete(passport.authenticate('jwt', { session: false }), users.remove);
 
+  router
+    .route('/:id/modules')
+    .get(passport.authenticate('jwt', { session: false }), users.getModules);
+
+  router
+    .route('/:id/morpheus')
+    .get(passport.authenticate('jwt', { session: false }), users.getMorpheus);
+
   return router;
 };
