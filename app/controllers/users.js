@@ -17,7 +17,7 @@ const create = async(function* (req, res) {
             _id: user._id,
             username: user.username
         };
-        const token = 'JWT ' + jwt.sign(userView, config.apiSecret(), { expiresIn: 3600 });
+        const token = jwt.sign(userView, config.apiSecret(), { expiresIn: 3600 });
         return res.json({ success: true, message: 'USER_REGISTERED', token: token, response: { user: userView } });
     } catch (err) {
         const errors = Object.keys(err.errors)
