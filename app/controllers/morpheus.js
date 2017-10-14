@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Morpheus = require('../models/morpheus');
+const utils = require('../controllers/utils');
 
 const create = (req, res) => {
   const parameters = {
@@ -16,6 +17,12 @@ const create = (req, res) => {
     .catch((err) => {
       return res.json({ success: false, message: err.message });
     });
+};
+
+const retrieveAll = (req, res) => {
+  utils.getAll(Morpheus, function(morpheusMap){
+    return res.send(morpheusMap);  
+  })
 };
 
 const remove = (req, res) => {
@@ -36,6 +43,7 @@ const retrieveModules = (req, res) => {
 
 module.exports = {
   create,
+  retrieveAll,
   remove,
   retrieve,
   update,

@@ -43,7 +43,7 @@ module.exports = (app) => {
         .hmset(id.morpheusId, id.type, socket.id)
         .hmset(socket.id, "morpheusId", id.morpheusId, "type", id.type)
         .execAsync()
-        .then(() => logger.info(`[Redis] Saved ${id.type} connection information: ${id.morpheusId} ${socket.id}`));
+        .then(() => logger.info(`[Redis] Saved ${id.type} connection information: morpheusId: ${id.morpheusId}, socketId: ${socket.id}`));
 
       if (cb !== undefined) {
         cb('Ok');

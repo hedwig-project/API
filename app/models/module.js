@@ -11,7 +11,7 @@ const ModuleSchema = new Schema({
       name: String,
     },
   },
-  location: String,
+  location: String, // TODO maybe should be an enum of possible values
   maxMessageInterval: String,
   name: String,
   qos: String,

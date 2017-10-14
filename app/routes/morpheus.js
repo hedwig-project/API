@@ -6,6 +6,7 @@ const morpheus = require('../controllers/morpheus');
 module.exports = () => {
   router
     .route('/')
+    .get(morpheus.retrieveAll) // TODO remove this, it's here for simplifying testing only
     .post(passport.authenticate('jwt', { session: false }), morpheus.create);
 
   router

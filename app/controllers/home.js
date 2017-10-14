@@ -6,12 +6,19 @@ const Module = require('../models/module');
 const User = require('../models/user');
 const Users = require('../controllers/users');
 const config = require('../config');
+const utils = require('../controllers/utils');
 
 /**
  * Methods definitions
  */
 
 // Rest API Methods
+const retrieveAll = (req, res) => {
+  utils.getAll(Home, function(homesMap){
+    return res.send(homesMap);
+  })
+};
+
 const create = async(function* (req, res) {
     let homeParameters = {
         name: req.body.name || '',
@@ -271,6 +278,7 @@ const deleteModule = async(function* (user, homeId, moduleId) {
  */
 module.exports = {
     // Rest API Methods
+    retrieveAll: retrieveAll,
     listHomes: listHomes,
     detailHome: detailHome,
     create: create,
