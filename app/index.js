@@ -1,3 +1,4 @@
+const bluebird = require('bluebird');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
@@ -47,7 +48,7 @@ router(app);
 /*
  * Mongo
  */
-mongoose.Promise = global.Promise;
+mongoose.Promise = bluebird;
 const mongooseConnection = mongoose
   .connect(config.db, {
     server: {

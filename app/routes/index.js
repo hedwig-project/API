@@ -1,6 +1,8 @@
 const homeRouter = require('./home');
-const logger = require('../logger');
+const modulesRouter = require('./modules');
+const morpheusRouter = require('./morpheus');
 const usersRouter = require('./users');
+const logger = require('../logger');
 
 module.exports = (app) => {
   app.get('/health', (req, res) => {
@@ -12,6 +14,8 @@ module.exports = (app) => {
   });
 
   app.use('/home', homeRouter());
+  app.use('/modules', modulesRouter());
+  app.use('/morpheus', morpheusRouter());
   app.use('/user', usersRouter());
 
   app.use((err, req, res, next) => {
