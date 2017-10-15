@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Module = require('../models/module');
 const Morpheus = require('../models/morpheus');
+const utils = require('../controllers/utils');
 
 const create = (req, res) => {
   const parameters = {
@@ -15,7 +16,7 @@ const create = (req, res) => {
     .create(parameters)
     .then((module) => {
       return Morpheus
-        .findByIdAndUpdate(req.body.morpheusId, { '$push': { 'modules': module } })
+        .findByIdAndUpdate(req.body.morpheusId, { '$push': { 'modules': module } }) // TODO maybe it should be module.id
         .exec()
         .then(() => module);
     })
@@ -23,6 +24,12 @@ const create = (req, res) => {
     .catch((err) => {
       return res.json({ success: false, message: err.message });
     });
+};
+
+const retrieveAll = (req, res) => {
+  utils.getAll(Module, function(modulesMap){
+    return res.send(modulesMap);  
+  })
 };
 
 const remove = (req, res) => {
@@ -39,6 +46,7 @@ const update = (req, res) => {
 
 module.exports = {
   create,
+  retrieveAll,
   remove,
   retrieve,
   update,

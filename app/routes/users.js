@@ -5,6 +5,10 @@ const users = require('../controllers/users');
 
 module.exports = () => {
   router
+    .route('/')  
+    .get(users.retrieveAll) // TODO remove this, it's here for simplifying testing only
+
+  router
     .route('/profile')
     .get(passport.authenticate('jwt', { session: false }), users.profile);
 

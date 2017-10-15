@@ -5,6 +5,10 @@ const home = require('../controllers/home');
 
 module.exports = () => {
   router
+    .route('/')  
+    .get(home.retrieveAll) // TODO remove this, it's here for simplifying testing only
+    
+  router
     .route('/list')
     .get(passport.authenticate('jwt', { session: false }), home.listHomes);
 

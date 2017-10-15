@@ -5,12 +5,20 @@ const Modules = require('../models/module');
 const Morpheus = require('../models/morpheus');
 const User = require('../models/user');
 const config = require('../config');
+const utils = require('../controllers/utils');
 
 /**
  * Methods definitions
  */
 
 // Rest API Methods
+
+const retrieveAll = (req, res) => {
+  utils.getAll(User, function(usersMap){
+    return res.send(usersMap);  
+  })
+};
+
 const create = async(function* (req, res) {
   const user = new User(req.body);
   try {
@@ -114,6 +122,7 @@ const getUserWithCriteria = async(function* (criteria, select) {
  */
 module.exports = {
   // Rest API Methods
+  retrieveAll,
   profile,
   create,
   update,

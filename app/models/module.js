@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const config = require('../config');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const ModuleSchema = new Schema({
   components: {
@@ -11,11 +12,13 @@ const ModuleSchema = new Schema({
       name: String,
     },
   },
-  location: String,
+  location: String, // TODO maybe should be an enum of possible values
   maxMessageInterval: String,
   name: String,
   qos: String,
-  serial: String,
+  serial: { type: String, unique: true  },
 });
+
+ModuleSchema.plugin(uniqueValidator);
 
 module.exports = mongoose.model('Module', ModuleSchema);
