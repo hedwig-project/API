@@ -4,6 +4,8 @@ const cors = require('cors');
 const express = require('express');
 const fs = require('fs');
 const http = require('http');
+const https = require('https');
+
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
@@ -33,7 +35,7 @@ if (process.env.NODE_ENV !== 'test') {
 app.use(methodOverride((req) => {
   if (req.body && typeof req.body === 'object' && '_method' in req.body) {
     // Look in urlencoded POST bodies and delete it
-    var method = req.body._method;
+    const method = req.body._method;
     delete req.body._method;
     return method;
   }
@@ -66,9 +68,13 @@ mongooseConnection
  */
 const server = socketio(app);
 
-/*
- * Listen
- */
 server.listen((process.env.PORT || 9090), () => {
   logger.info(`[Server] Listening on port ${process.env.PORT || 9090}`);
 });
+
+const privateKey  = fs.readFileSync(path.resolve('app/config/sslcert/key.pem'));
+const certificate = fs.readFileSync(path.resolve('app/config/sslcert/cert.pem'));
+const credentials = {key: privateKey, cert: certificate};
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.listen(8443);
