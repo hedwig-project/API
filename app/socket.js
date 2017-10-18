@@ -34,14 +34,14 @@ module.exports = (app) => {
   io.on('connection', socket => {
     logger.info(`[Socket.io] New connection`);
 
-    socket.on('hello', (data, cb) => {
+    socket.on('hello', (morpheusId, data, cb) => {
       const id = JSON.parse(data);
+      const socketLabel = id.type === 'morpheus' ? 'morpheus' : socket.id;
 
-      // TODO: can multiple instances of same type connect to socket.io server?
       redisClient
         .multi()
-        .hmset(id.morpheusId, id.type, socket.id)
-        .hmset(socket.id, "morpheusId", id.morpheusId, "type", id.type)
+        .hmset(id.morpheusId, socketLabel, socket.id)
+        .hmset(socket.id, id.morpheusId, id.morpheusId, "type", id.type)
         .execAsync()
         .then(() => logger.info(`[Redis] Saved ${id.type} connection information: morpheusId: ${id.morpheusId}, socketId: ${socket.id}`));
 
@@ -50,16 +50,13 @@ module.exports = (app) => {
       }
     });
 
-    socket.on('actionRequest', (data, cb) => {
+    socket.on('actionRequest', (morpheusId, data, cb) => {
       redisClient
-        .hgetallAsync(socket.id)
-        .then((id) => {
-          return redisClient.hgetallAsync(id.morpheusId);
-        })
-        .then((id) => {
-          if (id.morpheus) {
-            io.to(id.morpheus).emit('actionRequest', JSON.stringify(data));
-            logger.info(`[actionRequest] Event emitted successfully to ${id.morpheus}`);
+        .hgetAsync(morpheusId, 'morpheus')
+        .then((morpheusSocket) => {
+          if (morpheusSocket) {
+            io.to(morpheusSocket).emit('actionRequest', morpheusId, JSON.stringify(data));
+            logger.info(`[actionRequest] Event emitted successfully to ${morpheusSocket}`);
           }
         });
 
@@ -70,17 +67,16 @@ module.exports = (app) => {
       }
     });
 
-    socket.on('confirmation', (data, cb) => {
+    socket.on('confirmation', (morpheusId, data, cb) => {
       redisClient
-        .hgetallAsync(socket.id)
-        .then((id) => {
-          return redisClient.hgetallAsync(id.morpheusId);
-        })
-        .then((id) => {
-          if (id.dashboard) {
-            io.to(id.dashboard).emit('confirmation', JSON.parse(data));
-            logger.info(`[confirmation] Event emitted successfully to ${id.dashboard}`);
-          }
+        .hgetallAsync(morpheusId)
+        .then((morpheus) => {
+          Object.keys(morpheus).map((socketId) => {
+            if (socketId !== 'morpheus') {
+              io.to(socketId).emit('confirmation', morpheusId, JSON.parse(data));
+              logger.info(`[confirmation] Event emitted successfully to ${socketId}`);
+            }
+          });
         });
 
       logger.info(`[confirmation] ${data}`);
@@ -90,7 +86,7 @@ module.exports = (app) => {
       }
     });
 
-    socket.on('configuration', (data, cb) => {
+    socket.on('configuration', (morpheusId, data, cb) => {
       // TODO: get configuration
 
       logger.info(`[configuration] ${data}`);
@@ -100,17 +96,16 @@ module.exports = (app) => {
       }
     });
 
-    socket.on('data', (data, cb) => {
+    socket.on('data', (morpheusId, data, cb) => {
       redisClient
-        .hgetallAsync(socket.id)
-        .then((id) => {
-          return redisClient.hgetallAsync(id.morpheusId);
-        })
-        .then((id) => {
-          if (id.dashboard) {
-            io.to(id.dashboard).emit('data', JSON.parse(data));
-            logger.info(`[data] Event emitted successfully to ${id.dashboard}`);
-          }
+        .hgetallAsync(morpheusId)
+        .then((morpheus) => {
+          Object.keys(morpheus).map((socketId) => {
+            if (socketId !== 'morpheus') {
+              io.to(socketId).emit('data', morpheusId, JSON.parse(data));
+              logger.info(`[data] Event emitted successfully to ${socketId}`);
+            }
+          });
         });
 
       db.saveData(JSON.parse(data));
@@ -121,17 +116,16 @@ module.exports = (app) => {
       }
     });
 
-    socket.on('confirmationReport', (data, cb) => {
+    socket.on('confirmationReport', (morpheusId, data, cb) => {
       redisClient
-        .hgetallAsync(socket.id)
-        .then((id) => {
-          return redisClient.hgetallAsync(id.morpheusId);
-        })
-        .then((id) => {
-          if (id.dashboard) {
-            io.to(id.dashboard).emit('confirmationReport', JSON.parse(data));
-            logger.info(`[confirmationReport] Event emitted successfully to ${id.dashboard}`);
-          }
+        .hgetallAsync(morpheusId)
+        .then((morpheus) => {
+          Object.keys(morpheus).map((socketId) => {
+            if (socketId !== 'morpheus') {
+              io.to(socketId).emit('confirmationReport', morpheusId, JSON.parse(data));
+              logger.info(`[confirmationReport] Event emitted successfully to ${socketId}`);
+            }
+          });
         });
 
       db.saveConfirmationReport(JSON.parse(data));
@@ -147,12 +141,13 @@ module.exports = (app) => {
       redisClient
         .hgetallAsync(socket.id)
         .then((data) => {
-          return redisClient
-            .multi()
-            .hdel(data.morpheusId, data.type)
-            .del(socket.id)
-            .execAsync();
+          const promises = Object.keys(data)
+            .filter((key) => key !== 'type')
+            .map((morpheusId) => redisClient.hdelAsync(morpheusId, socket.id));
+
+          return Promise.all(promises);
         })
+        .then(() => redisClient.delAsync(socket.id))
         .then(() => logger.info(`[Redis] Cleaned up connection information`));
     });
   });
@@ -166,11 +161,13 @@ module.exports = (app) => {
 
   app.post('/message/:morpheusId', (req, res) => {
     redisClient
-      .getAsync(req.params.morpheusId)
+      .hgetAsync(req.params.morpheusId, 'morpheus')
       .then(socketId => {
-        logger.info(`[debug] Emitting a mock event of type "${req.body.type}"`);
-        io.to(socketId).emit(req.body.type, JSON.stringify(req.body.payload));
-        res.status(200).json(req.body);
+        if (socketId) {
+          logger.info(`[debug] Emitting a mock event of type "${req.body.type}"`);
+          io.to(socketId).emit(req.body.type, JSON.stringify(req.body.payload));
+          res.status(200).json(req.body);
+        }
       });
   });
 
