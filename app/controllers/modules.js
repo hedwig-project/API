@@ -19,7 +19,17 @@ const create = (req, res) => {
       return Morpheus
         .findByIdAndUpdate(req.body.morpheusId, { '$push': { 'modules': module } }) // TODO maybe it should be module.id
         .exec()
-        .then(() => module);
+        .then((morpheus) => ({
+          name: module.name,
+          serial: module.serial,
+          qos: module.qos,
+          _id: module._id,
+          components: module.components,
+          morpheus: {
+            _id: morpheus._id,
+            serial: morpheus.serial,
+          },
+        }));
     })
     .then((module) => res.json({ success: true, message: 'MODULE_REGISTERED', response: { module } }))
     .catch((err) => {
