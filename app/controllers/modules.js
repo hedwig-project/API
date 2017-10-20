@@ -7,6 +7,7 @@ const create = (req, res) => {
   const parameters = {
     components: req.body.components,
     location: req.body.location,
+    morpheus: req.body.morpheusId,
     name: req.body.name,
     serial: req.body.serial,
     qos: req.body.qos,
@@ -28,7 +29,7 @@ const create = (req, res) => {
 
 const retrieveAll = (req, res) => {
   utils.getAll(Module, function(modulesMap){
-    return res.send(modulesMap);  
+    return res.send(modulesMap);
   })
 };
 

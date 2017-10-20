@@ -5,7 +5,7 @@ const users = require('../controllers/users');
 
 module.exports = () => {
   router
-    .route('/')  
+    .route('/')
     .get(users.retrieveAll) // TODO remove this, it's here for simplifying testing only
 
   router

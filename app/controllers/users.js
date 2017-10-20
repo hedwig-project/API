@@ -15,7 +15,7 @@ const utils = require('../controllers/utils');
 
 const retrieveAll = (req, res) => {
   utils.getAll(User, function(usersMap){
-    return res.send(usersMap);  
+    return res.send(usersMap);
   })
 };
 
@@ -84,12 +84,12 @@ const remove = async(function* (req, res) {
 const getModules = async(function* (req, res) {
   let morpheus = yield Morpheus.find({ user: req.params.id }, { __v: 0 }).exec();
   const moduleIds = [].concat.apply([], morpheus.map((item) => item.modules));
-  let modules = yield Modules.find({ _id: { $in: moduleIds } }, { __v: 0 }).exec();
+  let modules = yield Modules.find({ _id: { $in: moduleIds } }, { __v: 0 }).populate('morpheus', 'serial').exec();
   return res.json({ success: true, message: 'USER_MODULES_FOUND', response: { modules } });
 });
 
 const getMorpheus = async(function* (req, res) {
-  let morpheus = yield Morpheus.find({ user: req.params.id }, { __v: 0 }).exec();
+  let morpheus = yield Morpheus.find({ user: req.params.id }, { __v: 0 }).populate('module', 'serial').exec();
   return res.json({ success: true, message: 'USER_MORPHEUS_FOUND', response: { morpheus } });
 });
 
