@@ -50,17 +50,17 @@ module.exports = (app) => {
       }
     });
 
-    socket.on('actionRequest', (morpheusId, data, cb) => {
+    socket.on('action', (morpheusId, data, cb) => {
       redisClient
         .hgetAsync(morpheusId, 'morpheus')
         .then((morpheusSocket) => {
           if (morpheusSocket) {
-            io.to(morpheusSocket).emit('actionRequest', morpheusId, JSON.stringify(data));
-            logger.info(`[actionRequest] Event emitted successfully to ${morpheusSocket}`);
+            io.to(morpheusSocket).emit('action', morpheusId, JSON.stringify(data));
+            logger.info(`[action] Event emitted successfully to ${morpheusSocket}`);
           }
         });
 
-      logger.info(`[actionRequest] ${JSON.stringify(data)}`);
+      logger.info(`[action] ${JSON.stringify(data)}`);
 
       if (cb !== undefined) {
         cb('Ok');
@@ -116,20 +116,20 @@ module.exports = (app) => {
       }
     });
 
-    socket.on('confirmationReport', (morpheusId, data, cb) => {
+    socket.on('report', (morpheusId, data, cb) => {
       redisClient
         .hgetallAsync(morpheusId)
         .then((morpheus) => {
           Object.keys(morpheus).map((socketId) => {
             if (socketId !== 'morpheus') {
-              io.to(socketId).emit('confirmationReport', morpheusId, JSON.parse(data));
-              logger.info(`[confirmationReport] Event emitted successfully to ${socketId}`);
+              io.to(socketId).emit('report', morpheusId, JSON.parse(data));
+              logger.info(`[report] Event emitted successfully to ${socketId}`);
             }
           });
         });
 
       db.saveConfirmationReport(JSON.parse(data));
-      logger.info(`[confirmationReport] ${data}`);
+      logger.info(`[report] ${data}`);
 
       if (cb !== undefined) {
         cb('Ok');
