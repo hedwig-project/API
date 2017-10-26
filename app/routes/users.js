@@ -7,13 +7,6 @@ module.exports = () => {
   router
     .route('/')
     .get(users.retrieveAll) // TODO remove this, it's here for simplifying testing only
-
-  router
-    .route('/profile')
-    .get(passport.authenticate('jwt', { session: false }), users.profile);
-
-  router
-    .route('/register')
     .post(users.create);
 
   router
@@ -21,11 +14,13 @@ module.exports = () => {
     .post(auth.authenticate);
 
   router
-    .route('/update')
-    .put(passport.authenticate('jwt', { session: false }), users.update);
+    .route('/profile')
+    .get(passport.authenticate('jwt', { session: false }), users.profile)
 
   router
-    .route('/delete')
+    .route('/:id')
+    .get(passport.authenticate('jwt', { session: false }), users.profile)
+    .put(passport.authenticate('jwt', { session: false }), users.update)
     .delete(passport.authenticate('jwt', { session: false }), users.remove);
 
   router

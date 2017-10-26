@@ -26,9 +26,12 @@ const create = async(function* (req, res) {
     const userView = {
       _id: user._id,
       username: user.username,
+      name: user.name,
+      email: user.email,
+      birthday: user.birthday,
     };
     const token = jwt.sign(userView, config.apiSecret(), { expiresIn: 3600 });
-    return res.json({ success: true, message: 'USER_REGISTERED', token: token, response: { user: userView } });
+    return res.json({ success: true, message: 'USER_REGISTERED', response: { token, user: userView } });
   } catch (err) {
     const errors = Object.keys(err.errors)
       .map(field => err.errors[field].message);
@@ -54,7 +57,7 @@ const update = async(function* (req, res) {
 
   try {
     yield User.findByIdAndUpdate(user._id, user).exec();
-    return res.json({ success: true, message: 'USER_UPDATED' });
+    return res.json({ success: true, message: 'USER_UPDATED', response: { user } });
   } catch (err) {
     const errors = Object.keys(err.errors)
       .map(field => err.errors[field].message);

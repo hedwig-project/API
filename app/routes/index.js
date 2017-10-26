@@ -13,10 +13,10 @@ module.exports = (app) => {
     res.send('OK');
   });
 
-  app.use('/home', homeRouter());
+  app.use('/homes', homeRouter());
   app.use('/modules', modulesRouter());
   app.use('/morpheus', morpheusRouter());
-  app.use('/user', usersRouter());
+  app.use('/users', usersRouter());
 
   app.use((err, req, res, next) => {
     // Treat as 404

@@ -21,6 +21,7 @@ const create = (req, res) => {
         .exec()
         .then((morpheus) => ({
           name: module.name,
+          location: module.location,
           serial: module.serial,
           qos: module.qos,
           _id: module._id,
