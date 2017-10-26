@@ -56,7 +56,7 @@ const update = async(function* (req, res) {
   user.birthday = req.body.birthday || user.birthday;
 
   try {
-    yield User.findByIdAndUpdate(user._id, user).exec();
+    yield User.findByIdAndUpdate(user._id, user, { new: true }).exec();
     return res.json({ success: true, message: 'USER_UPDATED', response: { user } });
   } catch (err) {
     const errors = Object.keys(err.errors)

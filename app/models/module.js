@@ -17,7 +17,8 @@ const ModuleSchema = new Schema({
   morpheus: { type: mongoose.Schema.Types.ObjectId, ref: 'Morpheus' },
   name: String,
   qos: String,
-  serial: { type: String, unique: true  },
+  serial: { type: String, unique: true },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
 
 ModuleSchema.plugin(uniqueValidator);

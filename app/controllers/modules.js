@@ -11,13 +11,14 @@ const create = (req, res) => {
     name: req.body.name,
     serial: req.body.serial,
     qos: req.body.qos,
+    user: req.body.userId,
   }
 
   Module
     .create(parameters)
     .then((module) => {
       return Morpheus
-        .findByIdAndUpdate(req.body.morpheusId, { '$push': { 'modules': module } }) // TODO maybe it should be module.id
+        .findByIdAndUpdate(req.body.morpheusId, { '$push': { 'modules': module._id } })
         .exec()
         .then((morpheus) => ({
           name: module.name,
@@ -45,15 +46,49 @@ const retrieveAll = (req, res) => {
 };
 
 const remove = (req, res) => {
-  // TODO
+  Module
+    .findByIdAndRemove(req.params.id)
+    .exec()
+    .then((module) => {
+      return Morpheus
+        .findByIdAndUpdate(module.morpheus, { '$pull': { 'modules': module._id } })
+        .exec()
+        .then(() => module);
+    })
+    .then((module) => res.json({ success: true, message: 'MODULE_DELETED', response: { module } }))
+    .catch((err) => {
+      return res.json({ success: false, message: err.message });
+    });
 };
 
 const retrieve = (req, res) => {
-  // TODO
+  Module
+    .findById(req.params.id)
+    .exec()
+    .then((module) => res.json({ success: true, message: 'MODULE_FOUND', response: { module } }))
+    .catch((err) => {
+      return res.json({ success: false, message: err.message });
+    });
 };
 
 const update = (req, res) => {
-  // TODO
+  const parameters = {
+    components: req.body.components,
+    location: req.body.location,
+    morpheus: req.body.morpheusId,
+    name: req.body.name,
+    serial: req.body.serial,
+    qos: req.body.qos,
+    user: req.body.userId,
+  }
+
+  Module
+    .findByIdAndUpdate(req.params.id, parameters, { new: true })
+    .exec()
+    .then((module) => res.json({ success: true, message: 'MODULE_UPDATED', response: { module } }))
+    .catch((err) => {
+      return res.json({ success: false, message: err.message });
+    });
 };
 
 module.exports = {
