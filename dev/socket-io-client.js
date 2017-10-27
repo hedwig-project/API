@@ -1,8 +1,9 @@
-const socket = require('socket.io-client')('http://138.197.83.143:9090')
+// const socket = require('socket.io-client')('http://138.197.83.143:9090')
+const socket = require('socket.io-client')('http://localhost:9090')
 
 socket.on('connect', () => {
   console.log('Connected')
-  socket.emit('hello', '{"morpheusId":"adf654wae84fea5d8ea6","type":"dashboard"}', ack => console.log(ack))
+  socket.emit('hello', '8u982cmnijwfsdfsdfsd', '{"morpheusId":"8u982cmnijwfsdfsdfsd","type":"dashboard"}', ack => console.log(ack))
 })
 
 const action = [
@@ -25,17 +26,17 @@ const action = [
 	},
 ];
 
-setInterval(() => socket.emit('actionRequest', action), 5000);
+setInterval(() => socket.emit('actionRequest', '8u982cmnijwfsdfsdfsd', action), 5000);
 
-socket.on('data', (data, cb) => {
+socket.on('data', (morpheusId, data, cb) => {
   console.log(JSON.stringify(data))
 })
 
-socket.on('confirmation', (data, cb) => {
+socket.on('confirmation', (morpheusId, data, cb) => {
   console.log(JSON.stringify(data))
 })
 
-socket.on('confirmationReport', (data, cb) => {
+socket.on('confirmationReport', (morpheusId, data, cb) => {
   console.log(JSON.stringify(data))
 })
 

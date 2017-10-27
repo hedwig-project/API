@@ -1,15 +1,16 @@
-const socket = require('socket.io-client')('http://138.197.83.143:9090')
+// const socket = require('socket.io-client')('http://138.197.83.143:9090')
+const socket = require('socket.io-client')('http://localhost:9090')
 
 socket.on('connect', () => {
   console.log('Connected')
-  socket.emit('hello', '{"morpheusId":"adf654wae84fea5d8ea6","type":"morpheus"}', ack => console.log(ack))
-  socket.emit('confirmation', '{"x":5}');
-  socket.emit('confirmationReport', '{"y":7}');
+  socket.emit('hello', '8u982cmnijwfsdfsdfsd', '{"morpheusId":"8u982cmnijwfsdfsdfsd","type":"morpheus"}', ack => console.log(ack))
+  socket.emit('confirmation', '8u982cmnijwfsdfsdfsd', '{"x":5}');
+  socket.emit('confirmationReport', '8u982cmnijwfsdfsdfsd', '{"y":7}');
 })
 
-setInterval(() => socket.emit('data', '{"data":"data"}'), 5000);
+setInterval(() => socket.emit('data', '8u982cmnijwfsdfsdfsd', '[{"topic":"hw/dummymodule1234","controlParameters":[{"parameter":"ts","value":1500914158},{"parameter":"ty","value":"temp_umi_pres"}],"payload":{"s1":"umidade","vl1":88.2,"s2":"temperatura","vl2":25.6,"s3":"presenca","vl3":false,"s4":"rl1","vl4":false,"s5":"rl2","vl5":true}}]'), 5000);
 
-socket.on('action', (data, cb) => {
+socket.on('actionRequest', (morpheusId, data, cb) => {
   console.log(JSON.parse(data))
 })
 

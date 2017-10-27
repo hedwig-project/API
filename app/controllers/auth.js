@@ -19,7 +19,7 @@ exports.authenticate = async(function* (req, res) {
   }
 
   try {
-    let select = '_id username name email hashed_password active';
+    let select = '_id username name email birthday hashed_password active';
 
     let user = yield User.load({ criteria, select });
 
@@ -31,7 +31,8 @@ exports.authenticate = async(function* (req, res) {
       _id: user[0]._id,
       username: user[0].username,
       name: user[0].name,
-      email: user[0].email
+      email: user[0].email,
+      birthday: user[0].birthday,
     };
 
     bcrypt
@@ -39,7 +40,7 @@ exports.authenticate = async(function* (req, res) {
       .then((match) => {
         if (match) {
           let token = jwt.sign(userView, config.apiSecret(), { expiresIn: 3600 });
-          return res.json({ success: true, message: 'USER_LOGGED_IN', token: token, response: { user: userView } });
+          return res.json({ success: true, message: 'USER_LOGGED_IN', response: { token, user: userView } });
         } else {
           return res.status(401).json({ success: false, message: 'INVALID_CREDENTIALS' });
         }

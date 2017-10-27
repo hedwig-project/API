@@ -15,7 +15,7 @@ const utils = require('../controllers/utils');
 
 const retrieveAll = (req, res) => {
   utils.getAll(User, function(usersMap){
-    return res.send(usersMap);  
+    return res.send(usersMap);
   })
 };
 
@@ -26,9 +26,12 @@ const create = async(function* (req, res) {
     const userView = {
       _id: user._id,
       username: user.username,
+      name: user.name,
+      email: user.email,
+      birthday: user.birthday,
     };
     const token = jwt.sign(userView, config.apiSecret(), { expiresIn: 3600 });
-    return res.json({ success: true, message: 'USER_REGISTERED', token: token, response: { user: userView } });
+    return res.json({ success: true, message: 'USER_REGISTERED', response: { token, user: userView } });
   } catch (err) {
     const errors = Object.keys(err.errors)
       .map(field => err.errors[field].message);
@@ -53,8 +56,8 @@ const update = async(function* (req, res) {
   user.birthday = req.body.birthday || user.birthday;
 
   try {
-    yield User.findByIdAndUpdate(user._id, user).exec();
-    return res.json({ success: true, message: 'USER_UPDATED' });
+    yield User.findByIdAndUpdate(user._id, user, { new: true }).exec();
+    return res.json({ success: true, message: 'USER_UPDATED', response: { user } });
   } catch (err) {
     const errors = Object.keys(err.errors)
       .map(field => err.errors[field].message);
@@ -84,12 +87,12 @@ const remove = async(function* (req, res) {
 const getModules = async(function* (req, res) {
   let morpheus = yield Morpheus.find({ user: req.params.id }, { __v: 0 }).exec();
   const moduleIds = [].concat.apply([], morpheus.map((item) => item.modules));
-  let modules = yield Modules.find({ _id: { $in: moduleIds } }, { __v: 0 }).exec();
+  let modules = yield Modules.find({ _id: { $in: moduleIds } }, { __v: 0 }).populate('morpheus', 'serial').exec();
   return res.json({ success: true, message: 'USER_MODULES_FOUND', response: { modules } });
 });
 
 const getMorpheus = async(function* (req, res) {
-  let morpheus = yield Morpheus.find({ user: req.params.id }, { __v: 0 }).exec();
+  let morpheus = yield Morpheus.find({ user: req.params.id }, { __v: 0 }).populate('module', 'serial').exec();
   return res.json({ success: true, message: 'USER_MORPHEUS_FOUND', response: { morpheus } });
 });
 
