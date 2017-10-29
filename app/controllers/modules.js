@@ -48,6 +48,7 @@ const retrieveAll = (req, res) => {
 const remove = (req, res) => {
   Module
     .findByIdAndRemove(req.params.id)
+    .populate('morpheus', 'serial')
     .exec()
     .then((module) => {
       return Morpheus
@@ -64,6 +65,7 @@ const remove = (req, res) => {
 const retrieve = (req, res) => {
   Module
     .findById(req.params.id)
+    .populate('morpheus', 'serial')
     .exec()
     .then((module) => res.json({ success: true, message: 'MODULE_FOUND', response: { module } }))
     .catch((err) => {
@@ -84,6 +86,7 @@ const update = (req, res) => {
 
   Module
     .findByIdAndUpdate(req.params.id, parameters, { new: true })
+    .populate('morpheus', 'serial')
     .exec()
     .then((module) => res.json({ success: true, message: 'MODULE_UPDATED', response: { module } }))
     .catch((err) => {
