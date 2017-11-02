@@ -4,6 +4,12 @@ const config = require('../config');
 const uniqueValidator = require('mongoose-unique-validator');
 
 const ModuleSchema = new Schema({
+  accessPoint: {
+    ip: { type: String, default: '192.168.0.30' },
+    mode: { type: String, default: 'auto' },
+    name: String,
+    password: String, // TODO: implement some logic to obscure this
+  },
   components: {
     relay1: {
       name: String,
@@ -12,7 +18,11 @@ const ModuleSchema = new Schema({
       name: String,
     },
   },
-  location: String, // TODO maybe should be an enum of possible values
+  connection: {
+    ssid: String,
+    password: String, // TODO: implement some logic to obscure this
+  },
+  location: { type: String, default: 'DEFAULT' }, // TODO maybe should be an enum of possible values
   maxMessageInterval: String,
   morpheus: { type: mongoose.Schema.Types.ObjectId, ref: 'Morpheus' },
   name: String,

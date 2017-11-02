@@ -5,7 +5,9 @@ const utils = require('../controllers/utils');
 
 const create = (req, res) => {
   const parameters = {
+    accessPoint: req.body.accessPoint,
     components: req.body.components,
+    connection: req.body.connection,
     location: req.body.location,
     morpheus: req.body.morpheusId,
     name: req.body.name,
@@ -26,7 +28,9 @@ const create = (req, res) => {
           serial: module.serial,
           qos: module.qos,
           _id: module._id,
+          accessPoint: module.accessPoint,
           components: module.components,
+          connection: module.connection,
           morpheus: {
             _id: morpheus._id,
             serial: morpheus.serial,
@@ -73,7 +77,9 @@ const retrieve = (req, res) => {
 
 const update = (req, res) => {
   const parameters = {
+    accessPoint: req.body.accessPoint,
     components: req.body.components,
+    connection: req.body.connection,
     location: req.body.location,
     morpheus: req.body.morpheusId,
     name: req.body.name,
