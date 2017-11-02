@@ -97,7 +97,7 @@ module.exports = (app) => {
         });
       // TODO: send configuration to Morpheus
 
-      logger.info(`[configuration] ${data}`);
+      logger.info(`[configuration] ${JSON.stringify(data)}`);
 
       if (cb !== undefined) {
         cb('Ok');
