@@ -10,12 +10,17 @@ const ModuleSchema = new Schema({
     name: String,
     password: String, // TODO: implement some logic to obscure this
   },
+  autoResetTest: { type: Boolean, default: true },
   components: {
+    display: {
+      type: { type: String, default: '2' },
+      backlight: { type: Boolean, default: true },
+    },
     relay1: {
-      name: String,
+      name: { type: String, default: 'Relé 1' },
     },
     relay2: {
-      name: String,
+      name: { type: String, default: 'Relé 2' },
     },
   },
   connection: {
@@ -23,10 +28,10 @@ const ModuleSchema = new Schema({
     password: String, // TODO: implement some logic to obscure this
   },
   location: { type: String, default: 'DEFAULT' }, // TODO maybe should be an enum of possible values
-  maxMessageInterval: String,
+  maxMessageInterval: { type: String, default: '1:s' },
   morpheus: { type: mongoose.Schema.Types.ObjectId, ref: 'Morpheus' },
   name: String,
-  qos: String,
+  qos: { type: String, default: '1' },
   serial: { type: String, unique: true },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
