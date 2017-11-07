@@ -87,9 +87,18 @@ module.exports = (app) => {
     });
 
     socket.on('configuration', (morpheusId, data, cb) => {
-      // TODO: get configuration
+      redisClient
+        .hgetAsync(morpheusId, 'morpheus')
+        .then((morpheusSocket) => {
+          if (morpheusSocket && socket.id !== morpheusSocket) {
+            io.to(morpheusSocket).emit('configuration', morpheusId, JSON.stringify(data));
+            logger.info(`[configuration] Event emitted successfully to ${morpheusSocket}`);
+          } else {
+            // TODO: send configuration to Morpheus
+          }
+        });
 
-      logger.info(`[configuration] ${data}`);
+      logger.info(`[configuration] ${JSON.stringify(data)}`);
 
       if (cb !== undefined) {
         cb('Ok');
