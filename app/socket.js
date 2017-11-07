@@ -43,7 +43,25 @@ module.exports = (app) => {
         .hmset(id.morpheusId, socketLabel, socket.id)
         .hmset(socket.id, id.morpheusId, id.morpheusId, "type", id.type)
         .execAsync()
-        .then(() => logger.info(`[Redis] Saved ${id.type} connection information: morpheusId: ${id.morpheusId}, socketId: ${socket.id}`));
+        .then(() => logger.info(`[Redis] Saved ${id.type} connection information: morpheusId: ${id.morpheusId}, socketId: ${socket.id}`))
+        .then(() => {
+          redisClient
+            .hgetallAsync(id.morpheusId)
+            .then((data) => {
+              if (socketLabel === 'morpheus') {
+                Object
+                  .keys(data)
+                  .filter((socketId) => socketId !== 'morpheus')
+                  .map((socketId) => {
+                    io.to(socketId).emit('hello', id.morpheusId);
+                    logger.info(`[hello] Event emitted successfully to ${socketId}`);
+                  });
+              } else if (data.morpheus){
+                io.to(socket.id).emit('hello', id.morpheusId);
+                logger.info(`[hello] Event emitted successfully to ${socket.id}`);
+              }
+            });
+        });
 
       if (cb !== undefined) {
         cb('Ok');
@@ -149,6 +167,23 @@ module.exports = (app) => {
       logger.info(`[Socket.io] Closed connection`);
       redisClient
         .hgetallAsync(socket.id)
+        .then((data) => {
+          if (data.type === 'morpheus') {
+            const morpheusId = Object.keys(data).filter((key) => key !== 'type')[0]
+            redisClient
+              .hgetallAsync(morpheusId)
+              .then((morpheus) => {
+                Object.keys(morpheus).map((socketId) => {
+                  if (socketId !== 'morpheus') {
+                    io.to(socketId).emit('bye', morpheusId);
+                    logger.info(`[bye] Event emitted successfully to ${socketId}`);
+                  }
+                });
+              });
+          }
+
+          return data;
+        })
         .then((data) => {
           const promises = Object.keys(data)
             .filter((key) => key !== 'type')
