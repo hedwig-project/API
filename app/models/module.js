@@ -14,7 +14,7 @@ const ModuleSchema = new Schema({
   components: {
     display: {
       type: { type: String, default: '2' },
-      backlight: { type: Boolean, default: true },
+      backlight: { type: String, default: '2' },
     },
     relay1: {
       name: { type: String, default: 'Relé 1' },
