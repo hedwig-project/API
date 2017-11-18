@@ -5,7 +5,7 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 const ModuleSchema = new Schema({
   accessPoint: {
-    ip: { type: String, default: '192.168.0.30' },
+    ip: { type: String, default: '192.168.0.20' },
     mode: { type: String, default: 'auto' },
     name: String,
     password: String, // TODO: implement some logic to obscure this
